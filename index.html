@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Image Categorization</title>
+</head>
+
+<body class=" bg-yellow-100 m-10 ">
+
+    <h1 class=" text-3xl m-10 font-bold text-center rounded-lg shadow-2xl p-8 text-black "> Image Categorization</h1>
+    
+    <div class="upload m-8">
+        <input type="file" name="imageUpload" id="imageUpload" accept="image/*" multiple class="block w-full text-sm text-slate-500 file:mr-4 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold hover:file:bg-violet-100 file:bg-violet-50 file:text-gray-700">
+    </div>
+      
+    <div class="images grid grid-cols-8 gap-4 m-8" id="imageContainer"></div>
+
+    <!-- custom categories -->
+    <div class="custonCategories m-4">
+        
+        <h2 class="text-center text-2xl font-bold">Custom Categories</h2>
+        <!-- <div class="flex  gap-4 item-center"> -->
+
+            <input type="text" name="categoryName" id="categoryName" placeholder="Category Name" class="text-sm p-2 rounded-lg m-4">
+            <div>
+                
+                <input type="color" id="categoryColor" class="p-2 mx-1 rounded-full border">
+            
+                <button id="addCategory" class="bg-violet-100 border p-2 mx-1 rounded">Add Category</button>
+            </div> 
+        <!-- </div> -->
+    </div>
+
+    <div id="categories" class="categories space-y-3  mt-10 m-4 pt-2"></div>
+    <h2 class="text-center text-2xl font-bold">Manual Categories</h2>
+
+    <div  class="categories space-y-3 mt-10 m-4 pt-2">
+        <div id="god" class="dropZone bg-green-200 p-3 flex flex-row space-x-3 overflow-auto rounded-lg shadow-2xl ">
+            <h2 class="text-xl font-bold p-4">God</h2>
+        </div>
+        <div id="decent" class="dropZone bg-blue-200 p-3 flex flex-row space-x-3 overflow-auto rounded-lg shadow-2xl ">
+            <h2 class="text-xl font-bold p-4">Decent</h2>
+        </div>
+        <div id="average" class="dropZone bg-gray-200 p-3 flex flex-row space-x-3 overflow-auto rounded-lg shadow-2xl  ">
+            <h2 class="text-xl font-bold p-4"> Average</h2>
+        </div>
+        <div id="trash" class="dropZone bg-pink-400 p-3 flex flex-row space-x-3 overflow-auto  rounded-lg shadow-2xl ">
+            <h2 class="text-xl font-bold p-4">Trash</h2>
+        </div>
+        <div id="intolerable" class="dropZone bg-red-400 p-3 flex flex-row space-x-3 overflow-auto rounded-lg shadow-2xl ">
+            <h2 class="text-xl font-bold p-4">Intolerable</h2>
+        </div>
+
+    </div>
+    <div class="Images grid grid-cols-4 gap-4 m-4">
+        <div class="m-4 p-5 border-2 border-black flex content-center justify-center h-[300px]">
+
+            <img src="kO8zHwd7.jpeg" alt="imaegs 1" id="Image1" class="draggable " draggable="true" width="200px">
+        </div>
+        <div class="m-4 p-5 border-2 border-black flex content-center justify-center h-[300px]">
+
+            <img src="Lion Pride T-Shirt ready to ship!.jpeg" id="Image2" alt="imaegs 2" class="draggable"
+                draggable="true" width="180px">
+        </div>
+        <div class="m-4 p-5 border-2 border-black flex content-center justify-center h-[300px]">
+
+            <img src="Moon Knight with His Super Hero Character.jpeg" id="Image3" alt="imaegs 3" class="draggable"
+                draggable="true" width="170px">
+        </div>
+
+
+        <div class="m-4 p-5 border-2 border-black flex content-center justify-center h-[300px]">
+            <img src="Wolverine.jpeg" alt="imaegs 4" id="Image4" class="draggable" draggable="true" width="200px">
+        </div>
+
+    </div>
+
+    <script>
+
+        // image upload
+
+        document.getElementById('imageUpload').addEventListener('change',function(event){
+            const img = document.getElementById('imageContainer');
+            const files = event.target.files;
+            
+            for(let i = 0; i < files.length; i++){
+                const file = files[i];
+                const reader = new FileReader();
+
+                reader.onload = function (event){
+                    const image= document.createElement('img');
+                    image.src = event.target.result;
+                    image.alt ="image uploaded";
+                    image.classList.add('draggable',"w-64");
+                    image.draggable = "true";
+                    image.width = 200;
+                    image.id = "uploadedImage"+i;
+                    imageContainer.appendChild(image);
+
+                    image.addEventListener('dragstart',function(event){
+                        event.dataTransfer.setData('text/plain',event.target.id);
+                    })
+                }
+                reader.readAsDataURL(file);
+            }
+        })
+
+
+        document.querySelectorAll(".draggable").forEach(item => {
+            item.addEventListener("dragstart", e => {
+                e.dataTransfer.setData('text', e.target.id)
+                // console.log("dragstart ", e.target.id)
+            })
+        })
+
+        document.querySelectorAll('.dropZone').forEach(zone => {
+            
+            zone.addEventListener('dragover', e => {
+                e.preventDefault();
+                zone.classList.add("bg-black")
+                zone.classList.add("text-white")
+            })
+            zone.addEventListener('dragleave', e => {
+                e.preventDefault();
+                zone.classList.remove("bg-black")
+                zone.classList.remove("text-white")
+            })
+
+            zone.addEventListener('drop', e => {
+                e.preventDefault();
+                zone.classList.remove("bg-black")
+                zone.classList.remove("text-white")
+                const id = e.dataTransfer.getData('text');
+                const image = document.getElementById(id);
+                zone.appendChild(image);
+            })
+        })
+
+        // custom categories
+        document.getElementById('addCategory').addEventListener('click',function() {
+            const categoryName= document.getElementById('categoryName').value.trim()
+            const categoryColor= document.getElementById('categoryColor').value;
+
+            if(categoryName === "") {
+                alert("Please enter a category name");
+                return;
+            }
+
+            const categoryContainer= document.getElementById('categories')
+            const newCategory = document.createElement('div');
+            newCategory.style.backgroundColor = categoryColor;
+            newCategory.innerHTML = `<h2 class="text-xl font-bold p-4">${categoryName}</h2>`;
+            newCategory.classList.add('dropZone','flex','flex-row','space-x-3','overflow-auto','p-3','rounded-lg','shadow-2xl');
+            // const newh2 = document.createElement('h2');
+            // newh2.classList.add('text-xl','font-bold','p-4');
+            categoryContainer.appendChild(newCategory);
+
+
+            newCategory.addEventListener('dragover', e => {
+                e.preventDefault();
+                newCategory.classList.add("bg-black")
+                newCategory.classList.add("text-white")
+            })
+            newCategory.addEventListener('dragleave', e => {
+                e.preventDefault();
+                newCategory.classList.remove("bg-black")
+                newCategory.classList.remove("text-white")
+            })
+
+            newCategory.addEventListener('drop', e => {
+                e.preventDefault();
+                newCategory.classList.remove("bg-black")
+                newCategory.classList.remove("text-white")
+                const id = e.dataTransfer.getData('text');
+                const image = document.getElementById(id);
+                newCategory.appendChild(image);
+            })
+        })
+
+
+    </script>
+</body>
+
+</html>
